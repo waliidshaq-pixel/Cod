@@ -1,0 +1,51 @@
+{
+    "name":  "lawid-launcher",
+    "version":  "0.3.2",
+    "private":  true,
+    "description":  "Lawid Launcher - Electron + React (kiosk, autostart, settings, scanning)",
+    "main":  "dist-electron/main.cjs",
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "vite",
+                    "build:renderer":  "vite build",
+                    "build:electron":  "tsc -p tsconfig.electron.json \u0026\u0026 esbuild electron/main.ts --bundle --platform=node --format=cjs --outfile=dist-electron/main.cjs --external:electron \u0026\u0026 powershell -NoProfile -Command \"Copy-Item -Force electron\\\\preload.cjs dist-electron\\\\preload.cjs\"",
+                    "build":  "npm run build:renderer \u0026\u0026 npm run build:electron",
+                    "start":  "concurrently -k \"npm:dev\" \"npm:electron\"",
+                    "electron":  "npm run build:electron \u0026\u0026 wait-on tcp:5173 \u0026\u0026 cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
+                    "package":  "npm run build \u0026\u0026 electron-builder",
+                    "postinstall":  "electron-builder install-app-deps"
+                },
+    "devDependencies":  {
+                            "@types/node":  "^20.11.30",
+                            "@vitejs/plugin-react":  "^4.2.0",
+                            "concurrently":  "^8.2.2",
+                            "cross-env":  "^7.0.3",
+                            "electron":  "^30.0.0",
+                            "electron-builder":  "^24.13.3",
+                            "esbuild":  "^0.21.5",
+                            "framer-motion":  "^11.0.0",
+                            "react":  "^18.2.0",
+                            "react-dom":  "^18.2.0",
+                            "typescript":  "^5.4.2",
+                            "vite":  "^5.2.0",
+                            "wait-on":  "^7.2.0"
+                        },
+    "build":  {
+                  "appId":  "com.lawid.launcher",
+                  "productName":  "Lawid Launcher",
+                  "files":  [
+                                "dist/**",
+                                "dist-electron/**",
+                                "electron/**",
+                                "package.json"
+                            ],
+                  "directories":  {
+                                      "buildResources":  "build"
+                                  },
+                  "win":  {
+                              "target":  [
+                                             "nsis"
+                                         ]
+                          }
+              }
+}
